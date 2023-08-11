@@ -299,7 +299,7 @@ onMounted(async () => {
 const fetchCountryRequirements = async (id) => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/requirements/${id}`
+      `https://pawtrip-service.onrender.com/requirements/${id}`
     );
     countryDetails.value = response.data.countryCode;
     requirements.value = response.data;
@@ -314,7 +314,7 @@ const fetchSpeciesRequirements = async () => {
     const species = selectedSpecies.value;
     const breed = selectedBreed.value;
     const response = await axios.get(
-      `http://localhost:3000/requirement/${country}/${species}`
+      `https://pawtrip-service.onrender.com/requirement/${country}/${species}`
     );
     requirements.value = response.data;
     speciesData.value = response.data;

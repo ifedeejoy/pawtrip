@@ -64,7 +64,7 @@ onMounted(async () => {
 const fetchCountryRequirements = async (id) => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/requirements/${id}`
+      `https://pawtrip-service.onrender.com/requirements/${id}`
     );
     countryDetails.value = response.data.countryCode;
   } catch (error) {

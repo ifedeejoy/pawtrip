@@ -40,7 +40,9 @@ const countries = ref([]);
 
 const fetchCountries = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/countries");
+    const response = await axios.get(
+      "https://pawtrip-service.onrender.com/countries"
+    );
     countries.value = response.data;
   } catch (error) {
     console.error("Error fetching countries:", error);
