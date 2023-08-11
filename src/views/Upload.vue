@@ -1,14 +1,15 @@
 <template>
   <Nav />
   <div class="flex flex-col h-screen max-w-full md:flex-row">
-    <side-bar />
-    <div class="flex flex-col w-9/12">
+    <SideBar />
+    <div class="flex flex-col w-full md:w-9/12">
       <!-- Main Content -->
       <div class="flex flex-col py-10 p-7">
         <!-- filter & title -->
         <div class="flex flex-col items-center justify-center">
           <h1 class="text-2xl text-blue-900">
-            Upload required documents for pet travel to United Kingdom (UK)
+            Upload required documents for pet travel to
+            {{ countryDetails.name }} ({{ countryDetails.code }})
           </h1>
           <div class="mt-12">
             <div v-for="(zone, idx) in dropzones" :key="idx">
@@ -26,7 +27,6 @@
             </div>
           </div>
           <div class="flex self-end justify-end">
-            <button class="mx-4 btn btn-outline btn-info">Cancel</button>
             <button @click="submitFiles" class="mx-4 btn btn-info">
               Upload
             </button>
@@ -38,20 +38,39 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios"; // If you're using axios, ensure it's imported
 import store from "../store";
 import Nav from "../components/layout/Nav.vue";
-import Card from "../components/ui/Card.vue";
 import Dropzone from "../components/ui/Dropzone.vue";
 import SideBar from "../components/layout/SideBar.vue";
 import { CoAirplaneMode } from "oh-vue-icons/icons";
 
+const route = useRoute();
 const dropzones = ref([
   { title: "USDA Health Certificate" },
   { title: "Rabies Vaccination" },
   { title: "Titre Test Results" },
 ]);
 const files = ref([]); // Array to store uploaded files
+const countryId = ref(route.params.country); // Get the country ID from the route
+const countryDetails = ref({}); // Store country details
+
+onMounted(async () => {
+  fetchCountryRequirements(countryId.value);
+});
+
+const fetchCountryRequirements = async (id) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/requirements/${id}`
+    );
+    countryDetails.value = response.data.countryCode;
+  } catch (error) {
+    console.error("Failed to fetch requirements:", error);
+  }
+};
 
 const handleFileUpload = ({ file, index }) => {
   files.value[index] = file;

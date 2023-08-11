@@ -1,8 +1,8 @@
 <template>
   <Nav />
   <div class="flex flex-col h-screen max-w-full md:flex-row">
-    <side-bar />
-    <div class="flex flex-col w-9/12">
+    <SideBar />
+    <div class="flex flex-col w-full md:w-9/12">
       <!-- Main Content -->
       <div class="flex flex-col py-10 p-7">
         <!-- filter & title -->

@@ -10,7 +10,7 @@ const routes = [
         component: Home
     },
     {
-        path: '/upload',
+        path: '/upload/:country',
         name: 'upload',
         component: Upload
     },

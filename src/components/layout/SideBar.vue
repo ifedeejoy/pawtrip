@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col justify-between w-3/12 h-full border-r border-gray-300"
+    class="flex-col justify-between hidden w-3/12 h-full border-r border-gray-300 md:flex"
   >
     <ul class="self-start w-full p-4 text-gray-500 bg-white menu">
       <!-- Sidebar content here -->

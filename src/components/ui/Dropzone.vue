@@ -8,7 +8,7 @@
     <p v-if="!isDraggingOver" class="mb-2">
       <span class="flex flex-col items-center justify-center">
         <h1><v-icon scale="2" name="co-cloud-upload" /></h1>
-        <h1>Upload files upto 15 MB</h1>
+        <h1>Upload files up to 15 MB</h1>
       </span>
     </p>
     <p v-else-if="isDraggingOver" class="mb-2 text-blue-600">
@@ -20,17 +20,22 @@
       class="hidden"
       @change="onFilesSelected"
       accept=".pdf"
+      multiple
     />
   </div>
   <div
-    v-if="uploadedFile"
+    v-for="(file, index) in uploadedFiles"
+    :key="index"
     class="flex items-center w-2/3 my-4 bg-white rounded shadow-md"
   >
     <div class="flex items-center w-full h-full p-4">
       <v-icon name="fa-regular-file-alt" />
-      <span class="ml-4">{{ uploadedFile.name }}</span>
+      <span class="ml-4">{{ file.name }}</span>
     </div>
-    <button @click.stop="cancelUpload" class="p-2 text-center text-red-500">
+    <button
+      @click.stop="cancelUpload(index)"
+      class="p-2 text-center text-red-500"
+    >
       <h1 class="p-2 text-2xl tracking-widest">x</h1>
     </button>
   </div>
@@ -39,37 +44,37 @@
 <script setup>
 import { ref, defineProps, defineEmits } from "vue";
 
-const { index } = defineProps(["index"]); // Receiving the index prop
-const emit = defineEmits(["file-uploaded", "file-canceled"]);
+const emit = defineEmits(["files-uploaded", "file-canceled"]);
 
 const isDraggingOver = ref(false);
-const uploadedFile = ref(null);
+const uploadedFiles = ref([]);
 const fileInput = ref(null);
 
 const onDragOver = () => (isDraggingOver.value = true);
 
 const onDrop = (event) => {
   isDraggingOver.value = false;
-  const files = event.dataTransfer.files;
-  if (files.length) uploadedFile.value = files[0];
-  emit("file-uploaded", uploadedFile.value);
+  const files = [...event.dataTransfer.files];
+  if (files.length) {
+    uploadedFiles.value.push(...files);
+    emit("files-uploaded", uploadedFiles.value);
+  }
 };
 
 const openFilePicker = () => fileInput.value.click();
 
 const onFilesSelected = (event) => {
-  const files = event.target.files;
+  const files = [...event.target.files];
   if (files.length) {
-    uploadedFile.value = files[0];
-    emit("file-uploaded", { file: uploadedFile.value, index });
+    uploadedFiles.value.push(...files);
+    emit("files-uploaded", uploadedFiles.value);
   }
 };
 
-const cancelUpload = (event) => {
-  event.stopPropagation(); // prevent triggering openFilePicker
-  uploadedFile.value = null;
+const cancelUpload = (fileIndex) => {
+  uploadedFiles.value.splice(fileIndex, 1);
   fileInput.value.value = ""; // Clear the input file field
-  emit("file-canceled");
+  emit("file-canceled", fileIndex);
 };
 </script>
 

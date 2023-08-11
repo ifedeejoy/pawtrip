@@ -1,8 +1,8 @@
 <template>
   <Nav />
   <div class="flex flex-col h-screen max-w-full md:flex-row">
-    <side-bar />
-    <div class="flex flex-col w-9/12">
+    <SideBar />
+    <div class="flex flex-col w-full md:w-9/12">
       <!-- Main Content -->
       <div class="flex flex-col py-10 p-7">
         <!-- filter & title -->
@@ -45,6 +45,109 @@
                 concierge will provide further step-by-step guidance when you
                 book your travels.
               </p>
+              <!-- search filter -->
+              <div class="flex flex-col w-full">
+                <div class="w-full p-2 px-4 rounded-lg shadow">
+                  <div class="divider"></div>
+                  <h1 class="text-lg font-bold">Pet Search</h1>
+                  <div class="flex flex-col mt-8 mb-4 md:flex-row">
+                    <input
+                      type="text"
+                      placeholder="Pet Name"
+                      class="w-full max-w-xs m-2 input input-bordered"
+                    />
+                    <select
+                      class="w-full max-w-xs md:max-w-[10rem] select select-bordered m-2"
+                      id="speciesSelect"
+                      v-model="selectedSpecies"
+                      @change="fetchSpeciesRequirements"
+                    >
+                      <option disabled selected value="">Species</option>
+                      <option value="dog">Dog</option>
+                      <option value="cat">Cat</option>
+                    </select>
+                    <select
+                      class="w-full max-w-xs md:max-w-[10rem] select select-bordered m-2"
+                    >
+                      <option disabled selected>Breed</option>
+                      <option>Han Solo</option>
+                      <option>Greedo</option>
+                    </select>
+                    <select
+                      class="w-full max-w-xs md:max-w-[10rem] select select-bordered m-2"
+                    >
+                      <option disabled selected>Gender</option>
+                      <option>Han Solo</option>
+                      <option>Greedo</option>
+                    </select>
+                    <select
+                      class="w-full max-w-xs md:max-w-[10rem] select select-bordered m-2"
+                    >
+                      <option disabled selected>Age</option>
+                      <option>Han Solo</option>
+                      <option>Greedo</option>
+                    </select>
+                  </div>
+                  <div class="flex flex-col md:items-center md:flex-row">
+                    <div
+                      class="w-full max-w-xs md:max-w-[10rem] form-control m-2"
+                    >
+                      <input
+                        type="number"
+                        placeholder="Type here"
+                        class="w-full max-w-xs md:max-w-[10rem] input input-bordered"
+                      />
+                      <span class="text-base text-center">Length</span>
+                    </div>
+                    <div
+                      class="w-full max-w-xs md:max-w-[10rem] form-control m-2"
+                    >
+                      <input
+                        type="number"
+                        placeholder="Type here"
+                        class="w-full max-w-xs md:max-w-[10rem] input input-bordered"
+                      />
+                      <span class="text-base text-center">Width</span>
+                    </div>
+                    <div
+                      class="w-full max-w-xs md:max-w-[10rem] form-control m-2"
+                    >
+                      <input
+                        type="number"
+                        placeholder="Type here"
+                        class="w-full max-w-xs md:max-w-[10rem] input input-bordered"
+                      />
+                      <span class="text-base text-center">Height</span>
+                    </div>
+                    <div
+                      class="w-full max-w-xs md:max-w-[10rem] form-control m-2"
+                    >
+                      <input
+                        type="number"
+                        placeholder="Type here"
+                        class="w-full max-w-xs md:max-w-[10rem] input input-bordered"
+                      />
+                      <span class="text-base text-center">Weight</span>
+                    </div>
+                    <div class="form-control">
+                      <label class="cursor-pointer label">
+                        <input type="checkbox" class="checkbox" />
+                        <span class="ml-2 text-sm label-text"
+                          >Service animal</span
+                        >
+                      </label>
+                    </div>
+                    <div class="form-control">
+                      <label class="cursor-pointer label">
+                        <input type="checkbox" class="checkbox" />
+                        <span class="ml-2 text-sm label-text"
+                          >Emotional support animal</span
+                        >
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <ul class="my-6">
                 <li
@@ -81,7 +184,7 @@
                         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                       ></path>
                     </svg>
-                    {{ requirement.text }}
+                    {{ capitalizeFirstLetter(requirement.text) }}
                   </a>
                 </li>
                 <li v-if="!speciesData && !Object.keys(speciesData).length">
@@ -118,141 +221,40 @@
                     </svg>
                     {{ capitalizeFirstLetter(selectedSpecies) }} specific
                     requirements:
-                    <ul v-if="speciesData.vaccinations">
+                    <ol>
                       <li
-                        v-for="(vaccination, index) in speciesData.value
-                          .speciesData.vaccinations"
-                        :key="index"
+                        v-for="(value, key) in speciesData.speciesData"
+                        :key="key"
                       >
-                        {{ vaccination }}
+                        <!-- If the value is an array, join the items with commas -->
+                        <span v-if="Array.isArray(value)">
+                          ({{ capitalizeFirstLetter(key) }})
+                          {{ value.join(", ") }}
+                        </span>
+
+                        <!-- If it's not an array, just display the key and value -->
+                        <span v-else> {{ key }}: {{ value }} </span>
                       </li>
-                    </ul>
+                    </ol>
                   </a>
                 </li>
               </ul>
-            </div>
-            <!-- search filter -->
-            <div class="flex flex-col w-full">
-              <div class="w-full p-2 px-4 rounded-lg shadow">
-                <div class="divider"></div>
-                <h1 class="text-lg font-bold">Pet Search</h1>
-                <div class="flex mt-8 mb-4">
-                  <input
-                    type="text"
-                    placeholder="Pet Name"
-                    class="w-full max-w-xs m-2 input input-bordered"
-                  />
-                  <select
-                    class="w-full max-w-[10rem] select select-bordered m-2"
-                    id="speciesSelect"
-                    v-model="selectedSpecies"
-                    @change="fetchSpeciesRequirements"
+              <!-- consent -->
+              <div class="my-3 form-control">
+                <label class="cursor-pointer label justify-normal">
+                  <input type="checkbox" class="checkbox checkbox-error" />
+                  <span class="ml-6 label-text"
+                    >I confirm that I agree with airline name's pet policy terms
+                    and conditions for traveling with my pet.</span
                   >
-                    <option disabled selected>Species</option>
-                    <option value="dog">Dog</option>
-                    <option value="cat">Cat</option>
-                  </select>
-                  <select
-                    class="w-full max-w-[10rem] select select-bordered m-2"
-                  >
-                    <option disabled selected>Breed</option>
-                    <option>Han Solo</option>
-                    <option>Greedo</option>
-                  </select>
-                  <select
-                    class="w-full max-w-[10rem] select select-bordered m-2"
-                  >
-                    <option disabled selected>Gender</option>
-                    <option>Han Solo</option>
-                    <option>Greedo</option>
-                  </select>
-                  <select
-                    class="w-full max-w-[10rem] select select-bordered m-2"
-                  >
-                    <option disabled selected>Age</option>
-                    <option>Han Solo</option>
-                    <option>Greedo</option>
-                  </select>
-                </div>
-                <div class="flex items-center">
-                  <div class="w-full max-w-[10rem] form-control m-2">
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="w-full max-w-[10rem] input input-bordered"
-                    />
-                    <span class="text-base text-center">Length</span>
-                  </div>
-                  <div class="w-full max-w-[10rem] form-control m-2">
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="w-full max-w-[10rem] input input-bordered"
-                    />
-                    <span class="text-base text-center">Width</span>
-                  </div>
-                  <div class="w-full max-w-[10rem] form-control m-2">
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="w-full max-w-[10rem] input input-bordered"
-                    />
-                    <span class="text-base text-center">Height</span>
-                  </div>
-                  <div class="w-full max-w-[10rem] form-control m-2">
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="w-full max-w-[10rem] input input-bordered"
-                    />
-                    <span class="text-base text-center">Weight</span>
-                  </div>
-                  <div class="form-control">
-                    <label class="cursor-pointer label">
-                      <input
-                        type="checkbox"
-                        checked="checked"
-                        class="checkbox"
-                      />
-                      <span class="ml-2 text-sm label-text"
-                        >Service animal</span
-                      >
-                    </label>
-                  </div>
-                  <div class="form-control">
-                    <label class="cursor-pointer label">
-                      <input
-                        type="checkbox"
-                        checked="checked"
-                        class="checkbox"
-                      />
-                      <span class="ml-2 text-sm label-text"
-                        >Emotional support animal</span
-                      >
-                    </label>
-                  </div>
-                </div>
-                <!-- consent -->
-                <div class="my-3 form-control">
-                  <label class="cursor-pointer label justify-normal">
-                    <input
-                      type="checkbox"
-                      checked="checked"
-                      class="checkbox checkbox-error"
-                    />
-                    <span class="ml-6 label-text"
-                      >I confirm that I agree with airline name's pet policy
-                      terms and conditions for traveling with my pet.</span
-                    >
-                  </label>
-                </div>
+                </label>
               </div>
               <!-- submit -->
-              <a href="/upload">
+              <a :href="`/upload/${countryId}`">
                 <button
-                  class="w-full my-4 text-white bg-red-700 btn btn-xs sm:btn-sm md:btn-md"
+                  class="w-full my-4 text-white bg-red-700 hover:border hover:border-red-700 hover:bg-white hover:text-red-700 btn btn-xs sm:btn-sm md:btn-md"
                 >
-                  Continue to Passengers
+                  Upload Documents
                 </button>
               </a>
             </div>
@@ -278,7 +280,7 @@ const route = useRoute();
 const countryId = ref(route.params.country); // Get the country ID from the route
 const countryDetails = ref({}); // Store country details
 const requirements = ref([]); // Store requirements
-const selectedSpecies = ref(null);
+const selectedSpecies = ref("");
 const speciesRequirements = ref({});
 const selectedBreed = ref(null);
 const speciesData = ref({});
@@ -309,10 +311,6 @@ const fetchSpeciesRequirements = async () => {
     );
     requirements.value = response.data;
     speciesData.value = response.data;
-
-    console.log("====================================");
-    console.log(speciesData.value.speciesData.vaccinations);
-    console.log("====================================");
   } catch (error) {
     console.error("Failed to fetch species-specific requirements:", error);
   }
@@ -347,7 +345,8 @@ const processedRequirements = computed(() => {
 });
 
 function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  let result = string.replace(/([A-Z])/g, " $1");
+  return result.charAt(0).toUpperCase() + result.slice(1);
 }
 </script>
 
