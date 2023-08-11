@@ -8,6 +8,13 @@
         <!-- filter & title -->
         <div class="flex flex-col">
           <h1 class="text-2xl text-blue-900">Pet Details</h1>
+          <div class="text-sm breadcrumbs">
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a>Countries</a></li>
+              <li>{{ countryDetails.name }}</li>
+            </ul>
+          </div>
           <div class="mt-12">
             <!-- notification banner -->
             <div

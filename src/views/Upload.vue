@@ -6,12 +6,24 @@
       <!-- Main Content -->
       <div class="flex flex-col py-10 p-7">
         <!-- filter & title -->
-        <div class="flex flex-col items-center justify-center">
+        <div class="flex flex-col">
           <h1 class="text-2xl text-blue-900">
             Upload required documents for pet travel to
             {{ countryDetails.name }} ({{ countryDetails.code }})
           </h1>
-          <div class="mt-12">
+          <div class="text-sm breadcrumbs">
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a>Countries</a></li>
+              <li>
+                <a :href="'/requirements/' + countryId">{{
+                  countryDetails.name
+                }}</a>
+              </li>
+              <li>Documents</li>
+            </ul>
+          </div>
+          <div class="flex flex-col justify-center mt-12">
             <div v-for="(zone, idx) in dropzones" :key="idx">
               <div class="flex items-center justify-center w-full my-6">
                 <h1 class="w-1/4 mr-8 text-xl font-bold text-blue-950">
@@ -39,7 +51,7 @@
 
 <script setup>
 import { computed, ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios"; // If you're using axios, ensure it's imported
 import store from "../store";
 import Nav from "../components/layout/Nav.vue";
@@ -48,6 +60,7 @@ import SideBar from "../components/layout/SideBar.vue";
 import { CoAirplaneMode } from "oh-vue-icons/icons";
 
 const route = useRoute();
+const router = useRouter();
 const dropzones = ref([
   { title: "USDA Health Certificate" },
   { title: "Rabies Vaccination" },
@@ -84,6 +97,8 @@ const submitFiles = async () => {
   console.log("====================================");
   console.log(files.value);
   console.log("====================================");
+  router.push("/confirmation/" + countryId.value);
+
   //   for (let file of files.value) {
   //     if (file) {
   //       // Assuming you have a function to handle Cloudinary upload called `uploadToCloudinary`

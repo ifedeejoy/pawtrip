@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import Upload from "../views/Upload.vue";
 import PetSearch from "../views/PetSearch.vue";
+import Confirmation from "../views/Confirmation.vue";
 
 const routes = [
     {
@@ -23,7 +24,12 @@ const routes = [
         path: '/requirements/:country',
         name: 'requirements',
         component: PetSearch
-    }
+    },
+    {
+        path: '/confirmation/:country',
+        name: 'confirmation',
+        component: Confirmation
+    },
 ];
 
 const router = createRouter({
