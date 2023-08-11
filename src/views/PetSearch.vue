@@ -84,6 +84,51 @@
                     {{ requirement.text }}
                   </a>
                 </li>
+                <li v-if="!speciesData && !Object.keys(speciesData).length">
+                  <a>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-6 h-6 mr-4 stroke-1 stroke-red-400 fill-red-100 shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                  </a>
+                </li>
+                <li v-else-if="speciesData && Object.keys(speciesData).length">
+                  <a class="flex">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-6 h-6 mr-4 stroke-purple-500 fill-purple-100 shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                    {{ capitalizeFirstLetter(selectedSpecies) }} specific
+                    requirements:
+                    <ul v-if="speciesData.vaccinations">
+                      <li
+                        v-for="(vaccination, index) in speciesData.value
+                          .speciesData.vaccinations"
+                        :key="index"
+                      >
+                        {{ vaccination }}
+                      </li>
+                    </ul>
+                  </a>
+                </li>
               </ul>
             </div>
             <!-- search filter -->
@@ -99,10 +144,13 @@
                   />
                   <select
                     class="w-full max-w-[10rem] select select-bordered m-2"
+                    id="speciesSelect"
+                    v-model="selectedSpecies"
+                    @change="fetchSpeciesRequirements"
                   >
                     <option disabled selected>Species</option>
-                    <option>Han Solo</option>
-                    <option>Greedo</option>
+                    <option value="dog">Dog</option>
+                    <option value="cat">Cat</option>
                   </select>
                   <select
                     class="w-full max-w-[10rem] select select-bordered m-2"
@@ -200,11 +248,13 @@
                 </div>
               </div>
               <!-- submit -->
-              <button
-                class="w-full my-4 text-white bg-red-700 btn btn-xs sm:btn-sm md:btn-md"
-              >
-                Continue to Passengers
-              </button>
+              <a href="/upload">
+                <button
+                  class="w-full my-4 text-white bg-red-700 btn btn-xs sm:btn-sm md:btn-md"
+                >
+                  Continue to Passengers
+                </button>
+              </a>
             </div>
           </div>
         </div>
@@ -228,6 +278,10 @@ const route = useRoute();
 const countryId = ref(route.params.country); // Get the country ID from the route
 const countryDetails = ref({}); // Store country details
 const requirements = ref([]); // Store requirements
+const selectedSpecies = ref(null);
+const speciesRequirements = ref({});
+const selectedBreed = ref(null);
+const speciesData = ref({});
 
 onMounted(async () => {
   fetchCountryRequirements(countryId.value);
@@ -242,6 +296,25 @@ const fetchCountryRequirements = async (id) => {
     requirements.value = response.data;
   } catch (error) {
     console.error("Failed to fetch requirements:", error);
+  }
+};
+
+const fetchSpeciesRequirements = async () => {
+  try {
+    const country = countryId.value;
+    const species = selectedSpecies.value;
+    const breed = selectedBreed.value;
+    const response = await axios.get(
+      `http://localhost:3000/requirement/${country}/${species}`
+    );
+    requirements.value = response.data;
+    speciesData.value = response.data;
+
+    console.log("====================================");
+    console.log(speciesData.value.speciesData.vaccinations);
+    console.log("====================================");
+  } catch (error) {
+    console.error("Failed to fetch species-specific requirements:", error);
   }
 };
 
@@ -270,26 +343,12 @@ const processedRequirements = computed(() => {
       }
     }
   });
-
   return requirementsList;
 });
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-// watch(selectedCountry, (newCountry) => {
-//   fetchCountryRequirements(newCountry);
-// });
-
-// const handlePetFilterApply = async (filters) => {
-//   // Replace 'filters' with the actual data structure you're using for filtering
-//   try {
-//     const response = await axios.post(`https://your-api-endpoint.com/requirements/${selectedCountry.value}`, filters);
-//     requirements.value = response.data;
-//   } catch (error) {
-//     console.error('Failed to fetch pet-specific requirements:', error);
-//   }
-// };
 </script>
 
 <style scoped></style>
